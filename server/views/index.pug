@@ -3,10 +3,93 @@ block title
     title Koa Douban 首页
 
 block content
-    .container
+    include ./includes/header
+    .container-fluid
         .row
-            .col-md-8
-                h1 Hi #{you}
-                p This is #{me}
-            .col-md-4
-                p 测试动态 Pug 引擎模板
+            .col-12.col-md-1.col-xl-1.sidebar
+                .collapse.cat-links
+                    .sidebar-item.active
+                        a.sidebar-link(href='/link1') 2018 年
+                        a.sidebar-link(href='/link1') 2019 年
+                        a.sidebar-link(href='/link1') 2020 年
+                        a.sidebar-link(href='/link1') 2021 年
+                        a.sidebar-link(href='/link1') 2022 年
+                        a.sidebar-link(href='/link1') 2023 年
+                        a.sidebar-link(href='/link1') 2024 年
+                        a.sidebar-link(href='/link1') 2025 年                    
+
+        .col-12.col-md-9.col-xl-9.py-md-3.pl-md-5.content
+            .row
+                .col-md-6
+                    .card
+                        img.card-img-top(src="http://o9spjqu1b.bkt.clouddn.com/5570778b-f7fc-4bcf-9df3-e47a6954b75a",data-video="http://video.iblack7.com/tgGnZRn3W4Ajw6PGcA_9Z.mp4")
+                        .card-body
+                            h4.card-title 这里是电影标题
+                            p.card-desc 这里是电影描述
+                        .card-footer
+                            small.text-muted 1 天前更新
+                .col-md-6
+                    .card
+                        img.card-img-top(src="http://o9spjqu1b.bkt.clouddn.com/5570778b-f7fc-4bcf-9df3-e47a6954b75a",data-video="http://video.iblack7.com/tgGnZRn3W4Ajw6PGcA_9Z.mp4")
+                        .card-body
+                            h4.card-title 这里是电影标题
+                            p.card-desc 这里是电影描述
+                        .card-footer
+                            small.text-muted 1 天前更新
+            .row
+                .col-md-6
+                    .card
+                        img.card-img-top(src="http://o9spjqu1b.bkt.clouddn.com/5570778b-f7fc-4bcf-9df3-e47a6954b75a",data-video="http://video.iblack7.com/tgGnZRn3W4Ajw6PGcA_9Z.mp4")
+                        .card-body
+                            h4.card-title 这里是电影标题
+                            p.card-desc 这里是电影描述
+                        .card-footer
+                            small.text-muted 1 天前更新
+                .col-md-6
+                    .card
+                        img.card-img-top(src="http://o9spjqu1b.bkt.clouddn.com/5570778b-f7fc-4bcf-9df3-e47a6954b75a",data-video="http://video.iblack7.com/tgGnZRn3W4Ajw6PGcA_9Z.mp4")
+                        .card-body
+                            h4.card-title 这里是电影标题
+                            p.card-desc 这里是电影描述
+                        .card-footer
+                            small.text-muted 1 天前更新
+    #myModal.modal.fade.bd-example-modal-lg(tabindex="-1", role="dialog", aria-labelledby="myLargeModalLabel", aria-hidden="true")
+        .modal-dialog.modal-lg
+            #videoModal.modal-content
+
+    include ./includes/script
+    script.
+        var player = null
+        $(document).ready(function() {
+            $('#myModal').on('hidden.bs.modal', function(e) {
+                if (player && palyer.pause) player.pause()
+
+            })
+
+
+            $('.card-img-top').click(function(e) {
+                var image = $(this).attr('src')
+                var video = $(this).data('video')
+
+                $('#myModal').modal('show')
+
+
+                if (!player) {
+                    player = new DPlayer({
+                        container: document.getElementById('videoModal'),
+                        screenshot: true,
+                        video: {
+                            url: video,
+                            pic: image,
+                            thumbnails: image
+                        }
+                    })
+                } else {
+                    player.switchVideo({
+                        url: video,
+                        pic: image,
+                        type: 'auto'
+                    })
+                }
+            })
+        })

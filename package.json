@@ -2,10 +2,11 @@
   "name": "koa-web",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server/index.js",
+  "git": "https://github.com/FlawlessPeerless/douban-trailer.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node server/index.js"
   },
   "author": "magic_su",
   "license": "ISC",
@@ -13,6 +14,8 @@
     "node": ">=7.6.0"
   },
   "dependencies": {
-    "koa": "^2.5.1"
+    "koa": "^2.5.1",
+    "koa-views": "^6.1.4",
+    "pug": "^2.0.3"
   }
 }

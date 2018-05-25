@@ -6,7 +6,9 @@
   "git": "https://github.com/FlawlessPeerless/douban-trailer.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "dev": "tsc --watch && nodemon build/index.js",
+    "server": "nodemon server"
   },
   "author": "magic_su",
   "license": "ISC",
@@ -22,5 +24,10 @@
     "puppeteer": "^1.4.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.45",
+    "@types/koa-views": "^2.0.3",
+    "@types/mongoose": "^5.0.14"
   }
 }

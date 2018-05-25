@@ -1,36 +1,30 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-const { Mixed, ObjectId } = Schema.Types
-
+"use strict";
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const { Mixed, ObjectId } = Schema.Types;
 const MovieSchema = new Schema({
     doubanId: {
         unique: true,
         type: String
     },
-
     category: [{
-        type: ObjectId,
-        ref: 'Category'
-    }],
-
+            type: ObjectId,
+            ref: 'Category'
+        }],
     rate: Number,
     title: String,
     summary: String,
     video: String,
     poster: String,
     cover: String,
-
     rawTitle: String,
     movieTypes: [String],
     pubdate: Mixed,
     year: Number,
-
     videoKey: String,
     coverKey: String,
     posterKey: String,
-
     tags: Array,
-
     meta: {
         createdAt: {
             type: Date,
@@ -41,15 +35,15 @@ const MovieSchema = new Schema({
             default: Date.now()
         }
     }
-})
-
-MovieSchema.pre('save', function(next) {
+});
+MovieSchema.pre('save', function (next) {
     if (this.isNew) {
-        this.meta.createdAt = this.meta.updateAt = Date.now()
-    } else {
-        this.meta.updateAt = Date.now()
+        this.meta.createdAt = this.meta.updateAt = Date.now();
     }
-    next()
-})
-
-mongoose.model('Movie', MovieSchema)
+    else {
+        this.meta.updateAt = Date.now();
+    }
+    next();
+});
+mongoose.model('Movie', MovieSchema);
+//# sourceMappingURL=movie.js.map

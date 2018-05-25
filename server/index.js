@@ -10,6 +10,9 @@ const { connect, initSchemas } = require('./database/init')
     await connect()
 
     initSchemas()
+
+    // require('./tasks/movie')
+    // require('./tasks/api')
 })()
 
 app.use(views(resolve(__dirname, './views'), { extension: 'pug' }))

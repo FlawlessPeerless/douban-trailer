@@ -2,8 +2,10 @@ import * as Koa from 'koa'
 import * as views from 'koa-views'
 import * as mongoose from 'mongoose'
 import { resolve } from 'path'
+import router from './routes/index'
 
 import { connect, initSchemas } from './database/init.js'
+
 
 
 const app = new Koa()
@@ -13,6 +15,10 @@ const app = new Koa()
 
     initSchemas()
 })()
+
+app
+    .use(router.routes())
+    .use(router.allowedMethods())
 
 app.use(views(resolve(__dirname, './views'), { extension: 'pug' }))
 app.use(async (ctx, next) => {

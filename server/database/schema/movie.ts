@@ -1,8 +1,32 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 const Schema = mongoose.Schema
+
 const { Mixed, ObjectId } = Schema.Types
 
-const MovieSchema = new Schema({
+export type MovieModel = mongoose.Document & {
+    doubanId :string
+    category :any[]
+    rate :number
+    title :string
+    summary :string
+    video :string
+    poster :string
+    cover :string
+    rawTitle :string
+    movieTypes :string[]
+    pubdate :mongoose.Schema.Types.Mixed,
+    year :number,
+    videoKey :string
+    coverKey: string
+    posterKey: string
+    tags :string[]
+    meta: {
+        createdAt :number
+        updateAt :number
+    }
+}
+
+const MovieSchema :mongoose.Schema = new Schema({
     doubanId: {
         unique: true,
         type: String
@@ -43,7 +67,7 @@ const MovieSchema = new Schema({
     }
 })
 
-MovieSchema.pre('save', function(next) {
+MovieSchema.pre<MovieModel>('save', function(next :Function) {
     if (this.isNew) {
         this.meta.createdAt = this.meta.updateAt = Date.now()
     } else {
@@ -52,4 +76,4 @@ MovieSchema.pre('save', function(next) {
     next()
 })
 
-mongoose.model('Movie', MovieSchema)
+export default mongoose.model<MovieModel>('Movie', MovieSchema)

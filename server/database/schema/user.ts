@@ -1,13 +1,31 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-const bcrypt = require('bcrypt')
-const { promisify } = require('util')
+import { default as mongoose, Model, Schema, Mongoose, model } from 'mongoose'
+
+import bcrypt from 'bcrypt'
+import { promisify } from 'util'
 // 加盐等级
-const SALT_WORK_FACTOR = 10
+const SALT_WORK_FACTOR :number = 10
 // 最大尝试次数
 const MAX_LOGIN_ATTEMPTS = 5 
 // 锁定时间 2h
 const LOCK_TIME = 2 * 60 * 60 * 1000
+
+export type UserModel = mongoose.Document & {
+    username :string
+    email :string
+    password :string
+    loginAttempts : number
+    meta: {
+        createdAt :number
+        updateAt :number
+    },
+    lockUntil? :number,
+    isLocked? :boolean,
+}
+
+interface UserModelInterface extends UserModel {
+    comparePassword(_password:string, password:string) :boolean
+}
+
 
 const UserSchema = new Schema({
     username: {
@@ -40,7 +58,7 @@ const UserSchema = new Schema({
     }
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre<UserModel>('save', function(next :any) {
     if (this.isNew) {
         this.meta.createdAt = this.meta.updateAt = Date.now()
     } else {
@@ -49,13 +67,13 @@ UserSchema.pre('save', function(next) {
     next()
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre<UserModel>('save', function(next) {
     if (this.isModified('password')) return next()
 
-    bycrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
+    bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
         if (err) return next(err)
 
-        bycrypt.hash(this.password, salt, (err, hash) => {
+        bcrypt.hash(this.password, salt, (err, hash) => {
             if (err) return next(err)
 
             this.password = hash
@@ -67,36 +85,36 @@ UserSchema.pre('save', function(next) {
 })
 
 // 判断当前用户是否锁定
-UserSchema.virtual('isLocked').get(() => {
+UserSchema.virtual('isLocked').get(function(this :UserModel) {
     return !!(this.lockUntil && this.lockUntil > Date.now())
 })
 
-UserSchema.method = {
+UserSchema.method({
     // 比较密码
-    comparePassword: (_password, password) => {
+    comparePassword (_password :string, password :string) :Promise<boolean> {
         return new Promise((resolve, reject) => {
             promisify(bcrypt.compare)(_password, password)
-            .then(isMatch => {
+            .then((isMatch :boolean)=> {
                 resolve(isMatch)
-            }, err => {
+            }, (err :Error) => {
                 reject(err)
             })
         })
     },
 
     // 比对登录次数
-    incLoginAttepts(user) {
+    incLoginAttepts(this :UserModel) {
         return new Promise((resolve, reject) => {
             if (this.lockUntil && this.lockUntil < Date.now()) {
                 this.update({
                     $set: { loginAttempts: 1 },
                     $unset: { lockUntil: 1 }
-                }, err => {
+                }, (err :Error) => {
                     if (!err) resolve(true)
                     else reject(err)
                 })
             } else {
-                let updates = {
+                let updates :any = {
                     $inc: { loginAttempts: 1 }
                 }
 
@@ -104,7 +122,7 @@ UserSchema.method = {
                     && !this.isLocked) {
                         updates.$set = { lockUntil: Date.now() + LOCK_TIME }
                 }
-                this.update(update, err => {
+                this.update(updates, (err :Error) => {
                     if (!err) resolve(true)
                     else reject(err)
                 })
@@ -112,6 +130,6 @@ UserSchema.method = {
         })
     }
 
-}
+})
 
-mongoose.model('User', UserSchema)
+export default model<UserModelInterface>('User', UserSchema)

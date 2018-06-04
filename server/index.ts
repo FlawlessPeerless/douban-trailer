@@ -1,12 +1,12 @@
 import * as Koa from 'koa'
 import * as views from 'koa-views'
+import * as bodyParser from 'koa-bodyparser'
 import * as mongoose from 'mongoose'
 import { resolve } from 'path'
-import router from './routes/index'
 
 import { connect, initSchemas } from './database/init.js'
 
-
+const MIDDLEWARES = ['router']
 
 const app = new Koa()
 
@@ -16,17 +16,26 @@ const app = new Koa()
     initSchemas()
 })()
 
-app
-    .use(router.routes())
-    .use(router.allowedMethods())
+async function useMiddlewares(app :Koa) {
+    MIDDLEWARES.map(name => {
+        let path = resolve(__dirname, `./middlewares/${name}.js`)
+        
 
-app.use(views(resolve(__dirname, './views'), { extension: 'pug' }))
-app.use(async (ctx, next) => {
-    await ctx.render('index', {
-        you: 'super',
-        me: 'kuli'
+        import(path)
+        .then((module) => {
+            console.log(module)
+            module[name](app)
+        })
     })
-})
+}
 
-app.listen(4466)
-console.log('Server is running on port: 4466!')
+async function start() {
+    app.use(bodyParser())
+
+    await useMiddlewares(app)
+
+    app.listen(4466)
+    console.log('Server is running on port: 4466!')
+}
+
+start()

@@ -1,5 +1,4 @@
 // movie 业务层
-import mongoose from 'mongoose'
 import { default as Movie, MovieModel } from '../database/schema/movie'
 //const Movie = mongoose.model('Movie')
 
@@ -25,7 +24,7 @@ async function getMovieDetail (id :number) {
     return movie
 }
 
-async function getRelativeMovies(movie :MovieModel) {
+async function getRelativeMovies (movie :MovieModel) {
     const movies = await Movie.find({
         movieTypes: { $in: movie.movieTypes }
     })

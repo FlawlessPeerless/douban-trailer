@@ -1,10 +1,10 @@
 import * as Koa from 'koa'
-import Router from "koa-router"
+import * as Router from "koa-router"
 import { resolve } from 'path'
-import glob from 'glob'
+import * as glob from 'glob'
 
 const symbolPrefix = Symbol('prefix')
-const routerMap :Map<string, any> = new Map()
+const routerMap :IRouterConfig[] = []
 const isArray = (c :any) => Array.isArray(c) ? c : [c]
 
 
@@ -12,7 +12,7 @@ const isArray = (c :any) => Array.isArray(c) ? c : [c]
 export class Route {
     private app :Koa
     private apiPath :string
-    private router :Router
+    private router :any
 
 
     constructor(app :Koa, apiPath :string) {
@@ -22,19 +22,25 @@ export class Route {
     }
 
     public init() {
+        const { app, router, apiPath } = this
         // 同步引入匹配文件
         glob.sync(resolve(this.apiPath, './**/*.js')).forEach(require)
 
-        for (let [conf, controller] of routerMap) {
-            const controllers = isArray(controller)
-            let prefixPath = conf.target[symbolPrefix]
-            if (prefixPath) prefixPath = normalizePath(prefixPath)
-            const routerPath = prefixPath + conf.path
-            this.router[conf.method](routerPath, ...controller) 
-        }
+        routerMap.map(({target, method, path, callback}) => {
+            const prefix = target[symbolPrefix]
+            router[method](prefix + path, ...callback)
+        })
 
-        this.app.use(this.router.routes())
-        this.app.use(this.router.allowedMethods())
+        // for (let [conf, controller] of routerMap) {
+        //     const controllers = isArray(controller)
+        //     let prefixPath = controller.target[symbolPrefix]
+        //     if (prefixPath) prefixPath = normalizePath(prefixPath)
+        //     const routerPath = prefixPath + controller.path
+        //     this.router[controller.method](routerPath, ...controller) 
+        // }
+
+        this.app.use(router.routes())
+        this.app.use(router.allowedMethods())
     }
 }
 
@@ -42,67 +48,60 @@ function normalizePath (path :string) {
     return path.startsWith('/') ? path : `/${path}`
 }
 
-function router (conf :IRouterConfig) {
-    return (target :any, key :string, descriptor: any) => {
-        conf.path = normalizePath(conf.path)
+// function router (conf :IRouterConfig) {
+//     return (target :any, key :string, descriptor: any) => {
+//         conf.path = normalizePath(conf.path)
 
-        routerMap.set(target[key],{
-            target: target,
-            ...conf
-        })
-    }
-}
+//         routerMap.set(target[key],{
+//             target: target,
+//             ...conf
+//         })
+//     }
+// }
+
+export const setRouter = (method :Method) => (path :string) => (target :any, key :string, descriptor :any) => {
+    routerMap.push({
+      target,
+      method,
+      path,
+      callback: target[key]
+    })
+    return descriptor
+  }
 
 function controller (path :string) {
     return (target :Function) => { target.prototype[symbolPrefix] = path } 
 }
 
 function get (path :string) {
-    return router({
-        method: 'get',
-        path: path
-    })
+    return setRouter('get')
 }
 
 function post (path :string) {
-    return router({
-        method: 'post',
-        path: path
-    })
+    return setRouter('post')
 }
 
 function put (path :string) {
-    return router({
-        method: 'put',
-        path: path
-    })
+    return setRouter('put')
 }
 
 function del (path : string) {
-    return router({
-        method: 'del',
-        path
-    })
+    return setRouter('del')
 }
 
 function use (path :string) {
-    return router({
-        method: 'use',
-        path
-    })
+    return setRouter('use')
 }
 
 function all (path :string) {
-    return router({
-        method: 'all',
-        path
-    })
+    return setRouter('all')
 }
 
 interface IRouterConfig {
     method :Method
     path :any,
     target? :any,
+    callback: Function[]
 }
 
 type Method = "all" | "post" | "get" | "put" | "del" | "use"

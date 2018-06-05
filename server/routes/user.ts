@@ -10,7 +10,7 @@ import {
 const router :Router = new Router()
 
 @controller('/api/v0/user')
-export class movieController {
+export class userController {
     @post('/')
     public async login (ctx :Context, next: any) {
         const { email, password } = ctx.request.body

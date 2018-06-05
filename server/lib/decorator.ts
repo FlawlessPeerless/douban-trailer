@@ -24,40 +24,24 @@ export class Route {
     public init() {
         const { app, router, apiPath } = this
         // 同步引入匹配文件
-        glob.sync(resolve(this.apiPath, './**/*.js')).forEach(require)
+        glob.sync(resolve(this.apiPath, './*.js'))
+        .forEach(path => {
+            require(path)
+        })
 
         routerMap.map(({target, method, path, callback}) => {
             const prefix = target[symbolPrefix]
-            router[method](prefix + path, ...callback)
-        })
+            router[method](prefix + path, callback)
+        }, router)
 
-        // for (let [conf, controller] of routerMap) {
-        //     const controllers = isArray(controller)
-        //     let prefixPath = controller.target[symbolPrefix]
-        //     if (prefixPath) prefixPath = normalizePath(prefixPath)
-        //     const routerPath = prefixPath + controller.path
-        //     this.router[controller.method](routerPath, ...controller) 
-        // }
-
-        this.app.use(router.routes())
-        this.app.use(router.allowedMethods())
+        app.use(router.routes())
+        app.use(router.allowedMethods())
     }
 }
 
 function normalizePath (path :string) {
     return path.startsWith('/') ? path : `/${path}`
 }
-
-// function router (conf :IRouterConfig) {
-//     return (target :any, key :string, descriptor: any) => {
-//         conf.path = normalizePath(conf.path)
-
-//         routerMap.set(target[key],{
-//             target: target,
-//             ...conf
-//         })
-//     }
-// }
 
 export const setRouter = (method :Method) => (path :string) => (target :any, key :string, descriptor :any) => {
     routerMap.push({
@@ -74,27 +58,27 @@ function controller (path :string) {
 }
 
 function get (path :string) {
-    return setRouter('get')
+    return setRouter('get')(path)
 }
 
 function post (path :string) {
-    return setRouter('post')
+    return setRouter('post')(path)
 }
 
 function put (path :string) {
-    return setRouter('put')
+    return setRouter('put')(path)
 }
 
 function del (path : string) {
-    return setRouter('del')
+    return setRouter('del')(path)
 }
 
 function use (path :string) {
-    return setRouter('use')
+    return setRouter('use')(path)
 }
 
 function all (path :string) {
-    return setRouter('all')
+    return setRouter('all')(path)
 }
 
 interface IRouterConfig {

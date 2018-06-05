@@ -23,7 +23,6 @@ async function useMiddlewares(app :Koa) {
 
         import(path)
         .then((module) => {
-            console.log(module)
             module[name](app)
         })
     })

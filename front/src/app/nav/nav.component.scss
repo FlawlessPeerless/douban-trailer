@@ -1,0 +1,24 @@
+@import './../../assets/scss/variate.scss';
+
+.app-nav {
+    background: #000;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .nav-logo {
+        padding: 0 40px;
+        h1 {
+            color: #fff;
+            font-size: 20px;
+        }
+    }
+
+    .nav-item {
+        padding: 0 12px;
+        p {
+            color: #fff;
+            font-size: 14px;
+        }
+    }
+}

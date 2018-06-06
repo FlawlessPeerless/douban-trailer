@@ -1,19 +1,23 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router'
+import { HttpClientModule } from '@angular/common/http'
 
+import { RouterModule } from '@angular/router'
 import { AppComponent } from './app.component';
 import { AppRouterModule } from './router/router.module';
-import { TestComponent } from './test/test.component';
+import { NavModule } from './nav/nav.module';
+import { IndexModule } from './index/index.module'
 
 @NgModule({
   declarations: [
-    AppComponent,
-    TestComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    AppRouterModule
+    NavModule,
+    AppRouterModule,
+    IndexModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

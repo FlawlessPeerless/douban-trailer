@@ -1,0 +1,9 @@
+<div class="app-nav">
+  <a class="nav-logo" routerLink="/detail">
+    <h1>logo</h1>
+  </a>
+  
+  <a class="nav-item" [routerLink]="title.path" *ngFor="let title of navTitleList">
+    <p>{{ title.name }}</p>
+  </a>
+</div>

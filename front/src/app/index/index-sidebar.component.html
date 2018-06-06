@@ -1,0 +1,6 @@
+<div class="app-index-sidebar">
+  <div class="index-sidebar-item" 
+    *ngFor="let year of yearList"
+    (click)="_chooseYear(year)"
+    [class.current-year]="selectedYear == year">{{ year }}</div>  
+</div>

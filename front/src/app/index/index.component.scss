@@ -1,0 +1,16 @@
+.app-index {
+    width: 100%;
+    height: calc(100vh - 42px);
+    background: #fff;
+    display: flex;
+    flex-direction: row;
+
+    .app-sidebar-wrapper {
+        width: 14vw;
+        border-right: 1px solid #eaeaea;
+    }
+
+    .index-content {
+        flex: 1; 
+    }
+}

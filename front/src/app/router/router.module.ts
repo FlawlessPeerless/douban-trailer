@@ -2,13 +2,20 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TestComponent } from '../test/test.component'
 
+import { IndexComponent } from '../index/index.component'
+
 const routes :Routes = [
-  { path: '', redirectTo: 'index', pathMatch: 'full' },
-  { path: 'login', component: TestComponent },
+  { path: '', component: IndexComponent },
+  { path: 'detail/:id' , component: TestComponent },
 ]
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes, { enableTracing: true }) ],
+  declarations: [ 
+    TestComponent
+  ],
+  imports: [ 
+    RouterModule.forRoot(routes, { enableTracing: true }),
+  ],
   exports: [ RouterModule ]
 })
 export class AppRouterModule { }
